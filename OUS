@@ -106,10 +106,10 @@ local Slider2 = Tab:CreateSlider({
 
 local Slider2 = Tab:CreateSlider({
 	Name = "Gravity",
-	Range = {0, 500},  -- Range from 0 to 500
-	Increment = 10,    -- Adjust slider increments
+	Range = {0.2, 500.2},  -- Range from 0 to 500
+	Increment = 1,    -- Adjust slider increments
 	Suffix = "Gravity",
-	CurrentValue = 192.5, -- Default gravity (normal Roblox gravity is 196.2)
+	CurrentValue = 196.2, -- Default gravity (normal Roblox gravity is 196.2)
 	Flag = "Slider3",  -- Unique flag for saving the setting
 	Callback = function(Value)
 		-- Set the workspace gravity to the value selected by the slider
@@ -200,7 +200,7 @@ local function createFloatingPart()
 	floatingPart.Shape = Enum.PartType.Ball
 	floatingPart.Transparency = 0.5
 	floatingPart.Anchored = true
-	floatingPart.CanCollide = false
+	floatingPart.CanCollide = true
 	floatingPart.Position = hrp.Position - Vector3.new(0, offset, 0)
 	floatingPart.Parent = Workspace
 end
