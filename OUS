@@ -160,6 +160,95 @@ Tab:CreateToggle({
 
 
 
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+-- Create a part that will float under the player
+local floatingPart = nil
+local floatingEnabled = false
+
+-- Function to create the floating part
+local function createFloatingPart()
+    floatingPart = Instance.new("Part")
+    floatingPart.Size = Vector3.new(2, 1, 2)  -- Size of the floating part
+    floatingPart.Shape = Enum.PartType.Ball
+    floatingPart.Transparency = 0.5
+    floatingPart.Anchored = true
+    floatingPart.CanCollide = false
+    floatingPart.Position = hrp.Position - Vector3.new(0, 2.1, 0)  -- Place it 2.1 studs below the HRP
+    floatingPart.Parent = Workspace
+end
+
+-- Function to destroy the floating part
+local function destroyFloatingPart()
+    if floatingPart then
+        floatingPart:Destroy()
+        floatingPart = nil
+    end
+end
+
+-- Toggle for Float Jump
+Tab:CreateToggle({
+    Name = "Float",
+    CurrentValue = false,
+    Flag = "FloatJumpToggle",
+    Callback = function(Value)
+        floatingEnabled = Value
+        if floatingEnabled then
+            -- Create the floating part when toggled on
+            createFloatingPart()
+        else
+            -- Destroy the floating part when toggled off
+            destroyFloatingPart()
+        end
+    end,
+})
+
+-- Track key states for the 'X' key (toggle float)
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    
+    -- When the 'X' key is pressed, enable/disable floating
+    if input.KeyCode == Enum.KeyCode.X then
+        if floatingEnabled then
+            -- Toggle floating part visibility and position
+            if floatingPart then
+                floatingPart.Position = hrp.Position - Vector3.new(0, 2.1, 0)  -- Maintain 2.1 studs under the HRP
+            end
+        end
+    end
+end)
+
+-- Keep updating the floating part's position if it's enabled
+RunService.RenderStepped:Connect(function()
+    if floatingEnabled and floatingPart then
+        -- Continuously position the floating part 2.1 studs below the HRP
+        floatingPart.Position = hrp.Position - Vector3.new(0, 2.1, 0)
+    end
+end)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
