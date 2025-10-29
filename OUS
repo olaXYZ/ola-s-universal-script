@@ -104,6 +104,37 @@ local Slider2 = Tab:CreateSlider({
 	end,
 })
 
+local Slider2 = Tab:CreateSlider({
+	Name = "Gravity",
+	Range = {0, 500},  -- Range from 0 to 500
+	Increment = 10,    -- Adjust slider increments
+	Suffix = "Gravity",
+	CurrentValue = 50, -- Default gravity (normal Roblox gravity is 196.2)
+	Flag = "Slider3",  -- Unique flag for saving the setting
+	Callback = function(Value)
+		-- Set the workspace gravity to the value selected by the slider
+		Workspace.Gravity = Value
+
+		-- If gravity is set to 0, float the player by disabling downward velocity
+		if Value == 0 then
+			local character = game.Players.LocalPlayer.Character
+			if character and character:FindFirstChild("Humanoid") then
+				-- Disable falling by setting a velocity control method (float)
+				character.Humanoid.PlatformStand = true
+				-- Optionally, you could also modify the Humanoid's MaxSlope or custom scripts to prevent falling
+			end
+		else
+			-- Restore to normal behavior (if gravity is not 0)
+			local character = game.Players.LocalPlayer.Character
+			if character and character:FindFirstChild("Humanoid") then
+				character.Humanoid.PlatformStand = false  -- Allow normal movement again
+			end
+		end
+	end,
+})
+
+
+
 -- Rayfield toggle for noclip
 Tab:CreateToggle({
 	Name = "Noclip",
@@ -150,18 +181,7 @@ Tab:CreateToggle({
 
 
 
-
-
-
-
-
-
-
-
-
-
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
@@ -169,81 +189,59 @@ local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local hrp = character:WaitForChild("HumanoidRootPart")
 
--- Create a part that will float under the player
 local floatingPart = nil
 local floatingEnabled = false
+local offset = 4.1 -- distance below the player
 
 -- Function to create the floating part
 local function createFloatingPart()
-    floatingPart = Instance.new("Part")
-    floatingPart.Size = Vector3.new(2, 1, 2)  -- Size of the floating part
-    floatingPart.Shape = Enum.PartType.Ball
-    floatingPart.Transparency = 0.5
-    floatingPart.Anchored = true
-    floatingPart.CanCollide = false
-    floatingPart.Position = hrp.Position - Vector3.new(0, 2.1, 0)  -- Place it 2.1 studs below the HRP
-    floatingPart.Parent = Workspace
+	floatingPart = Instance.new("Part")
+	floatingPart.Size = Vector3.new(2, 1, 2)
+	floatingPart.Shape = Enum.PartType.Ball
+	floatingPart.Transparency = 0.5
+	floatingPart.Anchored = true
+	floatingPart.CanCollide = false
+	floatingPart.Position = hrp.Position - Vector3.new(0, offset, 0)
+	floatingPart.Parent = Workspace
 end
 
 -- Function to destroy the floating part
 local function destroyFloatingPart()
-    if floatingPart then
-        floatingPart:Destroy()
-        floatingPart = nil
-    end
+	if floatingPart then
+		floatingPart:Destroy()
+		floatingPart = nil
+	end
 end
 
--- Toggle for Float Jump
+-- UI toggle
 Tab:CreateToggle({
-    Name = "Float",
-    CurrentValue = false,
-    Flag = "FloatJumpToggle",
-    Callback = function(Value)
-        floatingEnabled = Value
-        if floatingEnabled then
-            -- Create the floating part when toggled on
-            createFloatingPart()
-        else
-            -- Destroy the floating part when toggled off
-            destroyFloatingPart()
-        end
-    end,
+	Name = "Float",
+	CurrentValue = false,
+	Flag = "FloatJumpToggle",
+	Callback = function(Value)
+		floatingEnabled = Value
+		if floatingEnabled then
+			createFloatingPart()
+		else
+			destroyFloatingPart()
+		end
+	end,
 })
 
--- Track key states for the 'X' key (toggle float)
-UserInputService.InputBegan:Connect(function(input, processed)
-    if processed then return end
-    
-    -- When the 'X' key is pressed, enable/disable floating
-    if input.KeyCode == Enum.KeyCode.X then
-        if floatingEnabled then
-            -- Toggle floating part visibility and position
-            if floatingPart then
-                floatingPart.Position = hrp.Position - Vector3.new(0, 2.1, 0)  -- Maintain 2.1 studs under the HRP
-            end
-        end
-    end
-end)
-
--- Keep updating the floating part's position if it's enabled
+-- Keep floating part under player, but never move downward
 RunService.RenderStepped:Connect(function()
-    if floatingEnabled and floatingPart then
-        -- Continuously position the floating part 2.1 studs below the HRP
-        floatingPart.Position = hrp.Position - Vector3.new(0, 2.1, 0)
-    end
+	if floatingEnabled and floatingPart then
+		local targetY = hrp.Position.Y - offset
+
+		-- only move UP if target is higher than current position
+		if targetY > floatingPart.Position.Y then
+			floatingPart.Position = Vector3.new(hrp.Position.X, targetY, hrp.Position.Z)
+		else
+			-- stay where it is horizontally aligned but same height
+			floatingPart.Position = Vector3.new(hrp.Position.X, floatingPart.Position.Y, hrp.Position.Z)
+		end
+	end
 end)
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -822,5 +820,6 @@ local Button = Tab2:CreateButton({
 		game.Players.LocalPlayer.Character.Humanoid.Health = 0
 	end,
 })
+
 
 
