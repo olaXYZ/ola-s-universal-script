@@ -109,7 +109,7 @@ local Slider2 = Tab:CreateSlider({
 	Range = {0, 500},  -- Range from 0 to 500
 	Increment = 10,    -- Adjust slider increments
 	Suffix = "Gravity",
-	CurrentValue = 50, -- Default gravity (normal Roblox gravity is 196.2)
+	CurrentValue = 192.5, -- Default gravity (normal Roblox gravity is 196.2)
 	Flag = "Slider3",  -- Unique flag for saving the setting
 	Callback = function(Value)
 		-- Set the workspace gravity to the value selected by the slider
@@ -191,7 +191,7 @@ local hrp = character:WaitForChild("HumanoidRootPart")
 
 local floatingPart = nil
 local floatingEnabled = false
-local offset = 4.1 -- distance below the player
+local offset = 4 -- distance below the player
 
 -- Function to create the floating part
 local function createFloatingPart()
