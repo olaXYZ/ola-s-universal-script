@@ -1,0 +1,234 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Window = Rayfield:CreateWindow({
+	Name = "StickFight roblox edition script made by Ola",
+	Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+	LoadingTitle = "Holy weapons dude",
+	LoadingSubtitle = "by Ola",
+	ShowText = "Stickfight : roblox edition", -- for mobile users to unhide rayfield, change if you'd like
+	Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+	ToggleUIKeybind = "Z", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+
+	DisableRayfieldPrompts = false,
+	DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+	ConfigurationSaving = {
+		Enabled = true,
+		FolderName = nil, -- Create a custom folder for your hub/game
+		FileName = "Big Hub"
+	},
+
+	Discord = {
+		Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+		Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+		RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+	},
+
+	KeySystem = false, -- Set this to true to use our key system
+	KeySettings = {
+		Title = "Untitled",
+		Subtitle = "Key System",
+		Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
+		FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+		SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+		GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+		Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+	}
+})
+
+local Tab = Window:CreateTab("Items", 4483362458) -- Title, Image
+
+local Keybind = Tab:CreateKeybind({
+	Name = "Modded AdminGun (one time use) ",
+	CurrentKeybind = "Q",
+	HoldToInteract = false,
+	Flag = "AdminGun", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Keybind)
+		local admingun = game.ReplicatedStorage:WaitForChild("Weapons"):WaitForChild("AdminGun")
+		if admingun then
+			admingun.Parent = workspace:FindFirstChild("Tools")
+			admingun.Handle.CFrame = game.Players.LocalPlayer.Character:WaitForChild("Hitbox").CFrame
+			admingun:SetAttribute("Recoil", 0)
+			admingun:SetAttribute("HandRecoil", 0)
+			admingun:SetAttribute("Bullets", 50)
+		end
+	end,
+})
+
+
+
+local Keybind = Tab:CreateKeybind({
+	Name = "Modded BlackHoleGun (one time use) ",
+	CurrentKeybind = "E",
+	HoldToInteract = false,
+	Flag = "BlackHoleGun", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Keybind)
+		local admingun = game.ReplicatedStorage:WaitForChild("Weapons"):WaitForChild("BlackHoleGun")
+		if admingun then
+			admingun.Parent = workspace:FindFirstChild("Tools")
+			admingun.Handle.CFrame = game.Players.LocalPlayer.Character:WaitForChild("Hitbox").CFrame
+			admingun:SetAttribute("Recoil", 0)
+			admingun:SetAttribute("HandRecoil", 0)
+			admingun:SetAttribute("Bullets", 15)
+		end
+	end,
+})
+
+local Keybind = Tab:CreateKeybind({
+	Name = "Modded Raygun (one time use) ",
+	CurrentKeybind = "C",
+	HoldToInteract = false,
+	Flag = "RaygunSpawn", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Keybind)
+		local admingun = game.ReplicatedStorage:WaitForChild("Weapons"):WaitForChild("Raygun")
+		if admingun then
+			admingun.Parent = workspace:FindFirstChild("Tools")
+			admingun.Handle.CFrame = game.Players.LocalPlayer.Character:WaitForChild("Hitbox").CFrame
+			admingun:SetAttribute("Recoil", 0)
+			admingun:SetAttribute("HandRecoil", 0)
+			admingun:SetAttribute("Bullets", 100)
+		end
+	end,
+})
+
+
+local Keybind = Tab:CreateKeybind({
+	Name = "Modded RocketLauncher (one time use) ",
+	CurrentKeybind = "X",
+	HoldToInteract = false,
+	Flag = "RocketSpawn", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Keybind)
+		local admingun = game.ReplicatedStorage:WaitForChild("Weapons"):WaitForChild("RocketLauncher")
+		if admingun then
+			admingun.Parent = workspace:FindFirstChild("Tools")
+			admingun.Handle.CFrame = game.Players.LocalPlayer.Character:WaitForChild("Hitbox").CFrame
+			admingun:SetAttribute("Recoil", 0)
+			admingun:SetAttribute("HandRecoil", 0)
+			admingun:SetAttribute("Bullets", 50)
+		end
+	end,
+})
+
+local Keybind = Tab:CreateKeybind({
+	Name = "150 LADDER (one time use) ",
+	CurrentKeybind = "V",
+	HoldToInteract = false,
+	Flag = "RocketSpawn", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Keybind)
+		local admingun = game.ReplicatedStorage:WaitForChild("Weapons"):WaitForChild("LADDER")
+		if admingun then
+			admingun.Parent = workspace:FindFirstChild("Tools")
+			admingun.Handle.CFrame = game.Players.LocalPlayer.Character:WaitForChild("Hitbox").CFrame
+			admingun:SetAttribute("Recoil", 0)
+			admingun:SetAttribute("HandRecoil", -60)
+			admingun:SetAttribute("Bullets", 150)
+		end
+	end,
+})
+
+local Keybind = Tab:CreateKeybind({
+	Name = "100 bullets on any gun",
+	CurrentKeybind = "G",
+	HoldToInteract = false,
+	Flag = "BulletGive", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Keybind)
+		local admingun = game.Players.LocalPlayer.Character:FindFirstChild("Tool"):FindFirstChildOfClass("Model")
+		if admingun then
+			admingun:SetAttribute("Bullets", 100)
+		else
+			Rayfield:Notify({
+				Title = "Warning",
+				Content = "No weapon has been found",
+				Duration = 6.5,
+				Image = 4483362458,
+			})
+		end
+	end,
+})
+
+local Keybind = Tab:CreateKeybind({
+	Name = "Random Weapon",
+	CurrentKeybind = "R",
+	HoldToInteract = false,
+	Flag = "RandomWeapon", 
+	Callback = function(Keybind)
+		-- Get the Weapons folder
+		local weaponsFolder = game.ReplicatedStorage:WaitForChild("Weapons")
+		local weaponList = weaponsFolder:GetChildren()  -- Get all children in the Weapons folder
+
+		-- Define a list of weapons to exclude
+		local excludedWeapons = {"AdminGun", "BlackHoleGun", "RayGun", "RocketLauncher"}
+
+		-- Filter out the excluded weapons
+		local filteredWeapons = {}
+		for _, weapon in pairs(weaponList) do
+			-- Only add the weapon to the filtered list if it's not in the excluded list
+			if not table.find(excludedWeapons, weapon.Name) then
+				table.insert(filteredWeapons, weapon)
+			end
+		end
+
+		-- Check if there are any valid weapons to choose from
+		if #filteredWeapons > 0 then
+			-- Select a random weapon from the filtered list
+			local randomWeapon = filteredWeapons[math.random(1, #filteredWeapons)]
+
+			-- Clone and parent the weapon to the Tools folder
+			local clonedWeapon = randomWeapon
+			clonedWeapon.Parent = workspace:FindFirstChild("Tools")
+
+			-- Set the weapon's position based on the player's Hitbox
+			local hitbox = game.Players.LocalPlayer.Character:WaitForChild("Hitbox")
+			clonedWeapon.Handle.CFrame = hitbox.CFrame
+		else
+			warn("No valid weapons found in ReplicatedStorage.")
+		end
+	end,
+})
+
+
+
+local Tab2 = Window:CreateTab("Game", 4483362458)
+
+local Keybind = Tab2:CreateKeybind({
+	Name = "Respawn [OP]",
+	CurrentKeybind = "T",
+	HoldToInteract = false,
+	Flag = "Respawn", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Keybind)
+		local plr = game.Players.LocalPlayer
+
+		game.ReplicatedStorage.RemoteEvents.Respawn:FireServer(plr)
+		wait(1)
+		-- Ensure the Map and Spawns folder exist
+		local map = game.Workspace.Map:FindFirstChildOfClass("Model")
+		local spawnsFolder = map and map:FindFirstChild("Spawns")
+
+		if spawnsFolder then
+			-- Get all spawn points (BaseParts) from the Spawns folder
+			local spawnPoints = spawnsFolder:GetChildren()
+			-- Pick a random spawn point
+			local randomIndex = math.random(1, #spawnPoints)
+			local selectedSpawn = spawnPoints[randomIndex]
+
+			-- Ensure the selected spawn is a BasePart
+			if selectedSpawn:IsA("BasePart") then
+				-- Wait for the character to fully load (to avoid issues if it respawns)
+				if not plr.Character or not plr.Character.Parent then
+					plr.CharacterAdded:Wait()
+				end
+
+				-- Set the position of all parts to the spawn's position
+				for _, part in pairs(plr.Character:GetChildren()) do
+					if part:IsA("BasePart") then
+						-- Set the CFrame of each part to the selected spawn's CFrame
+						part.CFrame = selectedSpawn.CFrame
+					end
+				end
+			end
+		else
+			warn("No spawns found!")
+		end
+		
+	end,
+})
