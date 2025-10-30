@@ -40,6 +40,12 @@ local character = player.Character or player.CharacterAdded:Wait()
 local noclip = false
 
 -- Function to toggle noclip
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local noclip = false
+local RunService = game:GetService("RunService")
+
+-- Function to enable/disable noclip
 local function setNoclip(enabled)
 	noclip = enabled
 
@@ -53,17 +59,6 @@ local function setNoclip(enabled)
 	end
 end
 
--- Update noclip on every frame
-RunService.Stepped:Connect(function()
-	if noclip and character then
-		for _, part in pairs(character:GetDescendants()) do
-			if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-				part.CanCollide = false
-			end
-		end
-	end
-end)
-
 -- Reapply noclip on respawn
 player.CharacterAdded:Connect(function(char)
 	character = char
@@ -74,15 +69,16 @@ player.CharacterAdded:Connect(function(char)
 	end
 end)
 
--- Example toggle for noclip (can be linked to a button or keypress)
+-- Toggle noclip with a key (e.g., "N" key)
 game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
 
-	-- Toggle noclip with a key (e.g., "N" key)
+	-- Toggle noclip on or off with the "N" key
 	if input.KeyCode == Enum.KeyCode.N then
-		setNoclip(not noclip)  -- Toggle noclip on or off
+		setNoclip(not noclip)  -- Toggle noclip
 	end
 end)
+
 
 
 local Slider = Tab:CreateSlider({
@@ -538,5 +534,6 @@ local Button = Tab2:CreateButton({
 		game.Players.LocalPlayer.Character.Humanoid.Health = 0
 	end,
 })
+
 
 
