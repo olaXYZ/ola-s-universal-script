@@ -142,14 +142,25 @@ Tab:CreateToggle({
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
-
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
-
 local infJumpEnabled = false
 
--- Input listener for jumps
+-- Function to set infinite jump
+local function setInfJumpEnabled()
+	if infJumpEnabled then
+		-- Allow infinite jumps by forcing the humanoid to jump when the button is pressed
+		UserInputService.JumpRequest:Connect(function()
+			humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+		end)
+	else
+		-- Disable infinite jump (disconnect the event to stop it)
+		UserInputService.JumpRequest:Disconnect()
+	end
+end
+
+-- Input listener for jumps (This will only work if infinite jump is enabled)
 UserInputService.JumpRequest:Connect(function()
 	if infJumpEnabled then
 		humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
@@ -163,9 +174,20 @@ Tab:CreateToggle({
 	Flag = "InfJumpToggle",
 	Callback = function(Value)
 		infJumpEnabled = Value
+		setInfJumpEnabled() -- Apply the change immediately
 	end,
 })
 
+-- Listen for character respawn to reapply infinite jump setting
+player.CharacterAdded:Connect(function(newCharacter)
+	-- Wait for the new character to load and get its humanoid
+	newCharacter:WaitForChild("Humanoid")
+	humanoid = newCharacter:WaitForChild("Humanoid")
+	setInfJumpEnabled() -- Reapply the infinite jump setting after respawn
+end)
+
+-- Optionally, you can store the value in PlayerData (if using a data-saving system) to persist across sessions
+game:GetService("DataStoreService"):GetDataStore("InfJumpData"):SetAsync(player.UserId, infJumpEnabled)
 
 
 
