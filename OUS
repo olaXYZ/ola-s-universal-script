@@ -115,15 +115,14 @@ local Slider2 = Tab:CreateSlider({
 
 local Slider3 = Tab:CreateSlider({
 	Name = "Gravity",
-	Range = {0, 500},
-	Increment = 10,
+	Range = {0.2, 500.2},
+	Increment = 1,
 	Suffix = "Gravity",
-	CurrentValue = 50,
+	CurrentValue = 196.2,
 	Flag = "Slider3", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 	Callback = function(Value)
-		if game.Players.LocalPlayer.Character.Humanoid then
-			game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
-		end
+		-- Set the gravity to the selected value
+		game.Workspace.Gravity = Value
 	end,
 })
 
