@@ -245,6 +245,448 @@ end)
 
 
 
+
+
+-- ESP variables
+local ESPEnabled = false
+local ESPHighlights = {}
+local ESPBillboards = {}
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Function to create a BillboardGui for a player
+local function createBillboard(plr)
+	if not plr.Character then return end
+	local head = plr.Character:FindFirstChild("Head")
+	if not head then return end
+
+	local billboard = Instance.new("BillboardGui")
+	billboard.Name = "ESPBillboard"
+	billboard.Adornee = head
+	billboard.Size = UDim2.new(0, 100, 0, 25)
+	billboard.StudsOffset = Vector3.new(0, 2, 0)
+	billboard.AlwaysOnTop = true
+
+	local label = Instance.new("TextLabel")
+	label.Parent = billboard
+	label.Size = UDim2.new(1, 0, 1, 0)
+	label.BackgroundTransparency = 1
+	label.TextColor3 = Color3.fromRGB(255, 0, 0)
+	label.TextStrokeTransparency = 0
+	label.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+	label.TextScaled = true
+	label.Text = plr.DisplayName
+	label.Font = Enum.Font.SourceSansBold
+
+	billboard.Parent = head
+	ESPBillboards[plr] = billboard
+end
+
+-- Function to create Highlight for a player
+local function createHighlight(plr)
+	if not plr.Character then return end
+	if ESPHighlights[plr] then ESPHighlights[plr]:Destroy() end
+
+	local highlight = Instance.new("Highlight")
+	highlight.Adornee = plr.Character
+	highlight.FillColor = Color3.fromRGB(255, 0, 0)
+	highlight.FillTransparency = 0.5
+	highlight.OutlineTransparency = 0
+	highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
+	highlight.Parent = plr.Character
+	ESPHighlights[plr] = highlight
+end
+
+-- Apply ESP to a player
+local function applyESP(plr)
+	if plr == player then return end  -- skip local player
+
+	local function addESPToCharacter(char)
+		task.wait(0.1) -- wait for character parts
+		if ESPEnabled and char and char.Parent then
+			createHighlight(plr)
+			createBillboard(plr)
+		end
+	end
+
+	-- Initial character
+	if plr.Character then
+		addESPToCharacter(plr.Character)
+	end
+
+	-- Reapply on respawn
+	plr.CharacterAdded:Connect(function(char)
+		addESPToCharacter(char)
+	end)
+end
+
+-- Toggle ESP on/off
+local function setESP(enabled)
+	ESPEnabled = enabled
+
+	-- Remove all ESP when toggled off
+	if not enabled then
+		for plr, highlight in pairs(ESPHighlights) do
+			if highlight then highlight:Destroy() end
+		end
+		ESPHighlights = {}
+
+		for plr, billboard in pairs(ESPBillboards) do
+			if billboard then billboard:Destroy() end
+		end
+		ESPBillboards = {}
+	else
+		for _, plr in pairs(Players:GetPlayers()) do
+			applyESP(plr)
+		end
+	end
+end
+
+-- Remove ESP when a player leaves
+Players.PlayerRemoving:Connect(function(plr)
+	if ESPHighlights[plr] then
+		ESPHighlights[plr]:Destroy()
+		ESPHighlights[plr] = nil
+	end
+	if ESPBillboards[plr] then
+		ESPBillboards[plr]:Destroy()
+		ESPBillboards[plr] = nil
+	end
+end)
+
+-- Rayfield toggle for ESP
+-- Rayfield toggle for ESP
+Tab:CreateToggle({
+	Name = "ESP",
+	CurrentValue = false,
+	Flag = "ESPToggle",
+	Callback = function(Value)
+		setESP(Value)
+	end,
+})
+
+-- Ensure ESP applies to players who join after toggle is on
+game:GetService("Players").PlayerAdded:Connect(function(plr)
+	-- Only apply if ESP is enabled
+	if ESPEnabled and plr ~= player then
+		applyESP(plr)
+	end
+end)
+
+
+
+
+
+
+
+
+
+
+
+
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+local clickTPEnabled = false
+
+-- Function to teleport player to mouse position
+local function onClickTeleport()
+	if not clickTPEnabled then return end
+	if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
+	local hrp = player.Character.HumanoidRootPart
+	local targetPos = mouse.Hit.Position
+	hrp.CFrame = CFrame.new(targetPos + Vector3.new(0, 3, 0)) -- add a small Y offset so you don't clip the floor
+end
+
+-- Detect Ctrl + Left Mouse Button
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if gameProcessed then return end
+	if input.UserInputType == Enum.UserInputType.MouseButton1 and UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+		onClickTeleport()
+	end
+end)
+
+-- Rayfield toggle
+Tab:CreateToggle({
+	Name = "Click Teleport (ctrl + mb1)",
+	CurrentValue = false,
+	Flag = "ClickTpToggle",
+	Callback = function(Value)
+		clickTPEnabled = Value
+	end,
+})
+
+
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local Input = Tab:CreateInput({
+	Name = "Teleport to Player",
+	CurrentValue = "",
+	PlaceholderText = "Enter username or display name",
+	RemoveTextAfterFocusLost = false,
+	Flag = "TeleportInput",
+	Callback = function(Text)
+		-- Exit if textbox is empty
+		if Text == "" then
+			return
+		end
+
+		local Players = game:GetService("Players")
+		local player = Players.LocalPlayer
+		local targetText = Text:lower() -- case insensitive
+		local targetPlayer = nil
+
+		-- First, try to find exact match by username or display name
+		for _, plr in pairs(Players:GetPlayers()) do
+			if plr ~= player then
+				if plr.Name:lower() == targetText or plr.DisplayName:lower() == targetText then
+					targetPlayer = plr
+					break
+				end
+			end
+		end
+
+		-- If no exact match, try partial match
+		if not targetPlayer then
+			for _, plr in pairs(Players:GetPlayers()) do
+				if plr ~= player then
+					if string.find(plr.Name:lower(), targetText) or string.find(plr.DisplayName:lower(), targetText) then
+						targetPlayer = plr
+						break
+					end
+				end
+			end
+		end
+
+		-- Teleport if we found someone
+		if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+			player.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+		else
+			warn("Player not found or no character loaded!")
+		end
+	end,
+})
+
+
+
+
+
+local Button = Tab:CreateButton({
+	Name = "Invisibility GUI",
+	Callback = function()
+		Rayfield:Notify({
+			Title = "Info",
+			Content = "Press G to toggle invisibility ON / OFF",
+			Duration = 6.5,
+			Image = 16412844205,
+		})
+		loadstring(game:HttpGet('https://pastebin.com/raw/3Rnd9rHf'))()
+	end,
+})
+
+local Tab3 = Window:CreateTab("Games and others", 4483362458) -- Title, Image
+
+
+
+
+
+
+
+local Tab2 = Window:CreateTab("Debug", 4483362458) -- Title, Image
+
+local Button = Tab2:CreateButton({
+	Name = "Dex Explorer",
+	Callback = function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/BigBoyTimme/New.Loadstring.Scripts/refs/heads/main/Dex.Explorer"))()
+	end,
+})
+
+local Button = Tab2:CreateButton({
+	Name = "Reset (HEALTH = 0)",
+	Callback = function()
+		game.Players.LocalPlayer.Character.Humanoid.Health = 0
+	end,
+})
+
+
+
+	-- Toggle noclip with a key (e.g., "N" key)
+	if input.KeyCode == Enum.KeyCode.N then
+		setNoclip(not noclip)  -- Toggle noclip on or off
+	end
+end)
+
+
+local Slider = Tab:CreateSlider({
+	Name = "WalkSpeed",
+	Range = {16, 500},
+	Increment = 1,
+	Suffix = "WalkSpeed",
+	CurrentValue = 16,
+	Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		if game.Players.LocalPlayer.Character.Humanoid then
+			game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+		end
+	end,
+})
+
+local Slider2 = Tab:CreateSlider({
+	Name = "JumpPower",
+	Range = {0, 500},
+	Increment = 10,
+	Suffix = "JumpPower",
+	CurrentValue = 50,
+	Flag = "Slider2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		if game.Players.LocalPlayer.Character.Humanoid then
+			game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+		end
+	end,
+})
+
+local Slider3 = Tab:CreateSlider({
+	Name = "Gravity",
+	Range = {0, 500},
+	Increment = 10,
+	Suffix = "Gravity",
+	CurrentValue = 50,
+	Flag = "Slider3", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		if game.Players.LocalPlayer.Character.Humanoid then
+			game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+		end
+	end,
+})
+
+
+-- Rayfield toggle for noclip
+Tab:CreateToggle({
+	Name = "Noclip",
+	CurrentValue = false,
+	Flag = "NoclipToggle",
+	Callback = function(Value)
+		-- Value = true -> enable noclip
+		-- Value = false -> disable noclip
+		setNoclip(Value)
+	end,
+})
+
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+local infJumpEnabled = false
+
+-- Input listener for jumps
+UserInputService.JumpRequest:Connect(function()
+	if infJumpEnabled then
+		humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	end
+end)
+
+-- Toggle for your UI
+Tab:CreateToggle({
+	Name = "Infinite jumps",
+	CurrentValue = false,
+	Flag = "InfJumpToggle",
+	Callback = function(Value)
+		infJumpEnabled = Value
+	end,
+})
+
+
+
+
+
+
+
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+local floatingPart = nil
+local floatingEnabled = false
+local offset = 4 -- Distance below the player (in studs)
+
+-- Function to create the floating part
+local function createFloatingPart()
+	floatingPart = Instance.new("Part")
+	floatingPart.Size = Vector3.new(2, 1, 2) -- Size of the floating part
+	floatingPart.Shape = Enum.PartType.Ball
+	floatingPart.Transparency = 0.5
+	floatingPart.Anchored = true
+	floatingPart.CanCollide = false
+	floatingPart.Position = hrp.Position - Vector3.new(0, offset, 0) -- Position it 4 studs below HRP
+	floatingPart.Parent = Workspace
+end
+
+-- Function to destroy the floating part
+local function destroyFloatingPart()
+	if floatingPart then
+		floatingPart:Destroy()
+		floatingPart = nil
+	end
+end
+
+-- Toggle for Float Jump
+Tab:CreateToggle({
+	Name = "Float",
+	CurrentValue = false,
+	Flag = "FloatJumpToggle",
+	Callback = function(Value)
+		floatingEnabled = Value
+		if floatingEnabled then
+			createFloatingPart()
+		else
+			destroyFloatingPart()
+		end
+	end,
+})
+
+-- Keep floating part under player and teleport back if needed
+RunService.RenderStepped:Connect(function()
+	if floatingEnabled and floatingPart then
+		local targetY = hrp.Position.Y - offset
+
+		-- Check if floating part is off by more than a small threshold
+		if math.abs(floatingPart.Position.Y - targetY) > 0.1 then
+			-- Teleport the floating part back directly below the HumanoidRootPart
+			floatingPart.Position = Vector3.new(hrp.Position.X, targetY, hrp.Position.Z)
+		end
+	end
+end)
+
+
+
+
+
+
+
+
+
+
+
+
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
