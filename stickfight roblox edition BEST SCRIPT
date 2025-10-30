@@ -127,6 +127,22 @@ local Keybind = Tab:CreateKeybind({
 })
 
 local Keybind = Tab:CreateKeybind({
+	Name = "Dash saber (one time use) ",
+	CurrentKeybind = "B",
+	HoldToInteract = false,
+	Flag = "SaberSpawn", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Keybind)
+		local admingun = game.ReplicatedStorage:WaitForChild("Weapons"):WaitForChild("LightSabre")
+		if admingun then
+			admingun.Parent = workspace:FindFirstChild("Tools")
+			admingun.Handle.CFrame = game.Players.LocalPlayer.Character:WaitForChild("Hitbox").CFrame
+			admingun:SetAttribute("Recoil", 0)
+			admingun:SetAttribute("HandRecoil", -130)
+		end
+	end,
+})
+
+local Keybind = Tab:CreateKeybind({
 	Name = "100 bullets on any gun",
 	CurrentKeybind = "G",
 	HoldToInteract = false,
