@@ -121,7 +121,7 @@ local Keybind = Tab:CreateKeybind({
 			admingun.Handle.CFrame = game.Players.LocalPlayer.Character:WaitForChild("Hitbox").CFrame
 			admingun:SetAttribute("Recoil", 0)
 			admingun:SetAttribute("HandRecoil", -60)
-			admingun:SetAttribute("Bullets", 150)
+			admingun:SetAttribute("Bullets", 300)
 		end
 	end,
 })
