@@ -251,187 +251,23 @@ local Keybind = Tab2:CreateKeybind({
 })
 
 
-
 local Keybind = Tab2:CreateKeybind({
-	Name = "Restock every weapons on map",
+	Name = "Restock every weapon on map",
 	CurrentKeybind = "Y",
 	HoldToInteract = false,
-	Flag = "Stock", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Flag = "Stock", -- Unique identifier for saving configuration
 	Callback = function(Keybind)
-		local itemstostock = game.Workspace:FindFirstChild("Tools"):GetChildren()
-		for i,v in pairs(itemstostock) do
-			v.Parent = game.ReplicatedStorage.Weapons
-		end
+		local workspaceTools = game.Workspace:FindFirstChild("Tools")
+		local weaponStorage = game.ReplicatedStorage:FindFirstChild("Weapons")
 
+		if workspaceTools and weaponStorage then
+			for _, tool in pairs(workspaceTools:GetChildren()) do
+				tool.Parent = weaponStorage
+			end
+			print("[Restock] All weapons moved back to ReplicatedStorage.")
+		else
+			warn("[Restock] 'Tools' or 'Weapons' folder not found.")
+		end
 	end
-})	HoldToInteract = false,
-	Flag = "RaygunSpawn", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-	Callback = function(Keybind)
-		local admingun = game.ReplicatedStorage:WaitForChild("Weapons"):WaitForChild("Raygun")
-		if admingun then
-			admingun.Parent = workspace:FindFirstChild("Tools")
-			admingun.Handle.CFrame = game.Players.LocalPlayer.Character:WaitForChild("Hitbox").CFrame
-			admingun:SetAttribute("Recoil", 0)
-			admingun:SetAttribute("HandRecoil", 0)
-			admingun:SetAttribute("Bullets", 100)
-		end
-	end,
 })
 
-
-local Keybind = Tab:CreateKeybind({
-	Name = "Modded RocketLauncher (one time use) ",
-	CurrentKeybind = "X",
-	HoldToInteract = false,
-	Flag = "RocketSpawn", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-	Callback = function(Keybind)
-		local admingun = game.ReplicatedStorage:WaitForChild("Weapons"):WaitForChild("RocketLauncher")
-		if admingun then
-			admingun.Parent = workspace:FindFirstChild("Tools")
-			admingun.Handle.CFrame = game.Players.LocalPlayer.Character:WaitForChild("Hitbox").CFrame
-			admingun:SetAttribute("Recoil", 0)
-			admingun:SetAttribute("HandRecoil", 0)
-			admingun:SetAttribute("Bullets", 50)
-		end
-	end,
-})
-
-local Keybind = Tab:CreateKeybind({
-	Name = "300 LADDER (one time use) ",
-	CurrentKeybind = "V",
-	HoldToInteract = false,
-	Flag = "RocketSpawn", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-	Callback = function(Keybind)
-		local admingun = game.ReplicatedStorage:WaitForChild("Weapons"):WaitForChild("LADDER")
-		if admingun then
-			admingun.Parent = workspace:FindFirstChild("Tools")
-			admingun.Handle.CFrame = game.Players.LocalPlayer.Character:WaitForChild("Hitbox").CFrame
-			admingun:SetAttribute("Recoil", 0)
-			admingun:SetAttribute("HandRecoil", -60)
-			admingun:SetAttribute("Bullets", 300)
-		end
-	end,
-})
-
-local Keybind = Tab:CreateKeybind({
-	Name = "Dash saber (one time use) ",
-	CurrentKeybind = "B",
-	HoldToInteract = false,
-	Flag = "SaberSpawn", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-	Callback = function(Keybind)
-		local admingun = game.ReplicatedStorage:WaitForChild("Weapons"):WaitForChild("LightSabre")
-		if admingun then
-			admingun.Parent = workspace:FindFirstChild("Tools")
-			admingun.Handle.CFrame = game.Players.LocalPlayer.Character:WaitForChild("Hitbox").CFrame
-			admingun:SetAttribute("Recoil", 0)
-			admingun:SetAttribute("HandRecoil", -130)
-		end
-	end,
-})
-
-local Keybind = Tab:CreateKeybind({
-	Name = "100 bullets on any gun",
-	CurrentKeybind = "G",
-	HoldToInteract = false,
-	Flag = "BulletGive", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-	Callback = function(Keybind)
-		local admingun = game.Players.LocalPlayer.Character:FindFirstChild("Tool"):FindFirstChildOfClass("Model")
-		if admingun then
-			admingun:SetAttribute("Bullets", 100)
-		else
-			Rayfield:Notify({
-				Title = "Warning",
-				Content = "No weapon has been found",
-				Duration = 6.5,
-				Image = 4483362458,
-			})
-		end
-	end,
-})
-
-local Keybind = Tab:CreateKeybind({
-	Name = "Random Weapon",
-	CurrentKeybind = "R",
-	HoldToInteract = false,
-	Flag = "RandomWeapon", 
-	Callback = function(Keybind)
-		-- Get the Weapons folder
-		local weaponsFolder = game.ReplicatedStorage:WaitForChild("Weapons")
-		local weaponList = weaponsFolder:GetChildren()  -- Get all children in the Weapons folder
-
-		-- Define a list of weapons to exclude
-		local excludedWeapons = {"AdminGun", "BlackHoleGun", "RayGun", "RocketLauncher"}
-
-		-- Filter out the excluded weapons
-		local filteredWeapons = {}
-		for _, weapon in pairs(weaponList) do
-			-- Only add the weapon to the filtered list if it's not in the excluded list
-			if not table.find(excludedWeapons, weapon.Name) then
-				table.insert(filteredWeapons, weapon)
-			end
-		end
-
-		-- Check if there are any valid weapons to choose from
-		if #filteredWeapons > 0 then
-			-- Select a random weapon from the filtered list
-			local randomWeapon = filteredWeapons[math.random(1, #filteredWeapons)]
-
-			-- Clone and parent the weapon to the Tools folder
-			local clonedWeapon = randomWeapon
-			clonedWeapon.Parent = workspace:FindFirstChild("Tools")
-
-			-- Set the weapon's position based on the player's Hitbox
-			local hitbox = game.Players.LocalPlayer.Character:WaitForChild("Hitbox")
-			clonedWeapon.Handle.CFrame = hitbox.CFrame
-		else
-			warn("No valid weapons found in ReplicatedStorage.")
-		end
-	end,
-})
-
-
-
-local Tab2 = Window:CreateTab("Game", 4483362458)
-
-local Keybind = Tab2:CreateKeybind({
-	Name = "Respawn [OP]",
-	CurrentKeybind = "T",
-	HoldToInteract = false,
-	Flag = "Respawn", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-	Callback = function(Keybind)
-		local plr = game.Players.LocalPlayer
-
-		game.ReplicatedStorage.RemoteEvents.Respawn:FireServer(plr)
-		wait(1)
-		-- Ensure the Map and Spawns folder exist
-		local map = game.Workspace.Map:FindFirstChildOfClass("Model")
-		local spawnsFolder = map and map:FindFirstChild("Spawns")
-
-		if spawnsFolder then
-			-- Get all spawn points (BaseParts) from the Spawns folder
-			local spawnPoints = spawnsFolder:GetChildren()
-			-- Pick a random spawn point
-			local randomIndex = math.random(1, #spawnPoints)
-			local selectedSpawn = spawnPoints[randomIndex]
-
-			-- Ensure the selected spawn is a BasePart
-			if selectedSpawn:IsA("BasePart") then
-				-- Wait for the character to fully load (to avoid issues if it respawns)
-				if not plr.Character or not plr.Character.Parent then
-					plr.CharacterAdded:Wait()
-				end
-
-				-- Set the position of all parts to the spawn's position
-				for _, part in pairs(plr.Character:GetChildren()) do
-					if part:IsA("BasePart") then
-						-- Set the CFrame of each part to the selected spawn's CFrame
-						part.CFrame = selectedSpawn.CFrame
-					end
-				end
-			end
-		else
-			warn("No spawns found!")
-		end
-		
-	end,
-})
